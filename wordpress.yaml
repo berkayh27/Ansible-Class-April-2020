@@ -1,0 +1,57 @@
+---
+- name: Wordpress Playbook
+  hosts: all
+  user: centos
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Install httpd
+    package:
+     name: "{{item}}"
+     state: present
+    with_items:
+     - httpd
+     - epel-release
+     - http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+     - mariadb
+     - mariadb-server
+  - name: Php version
+    shell: "yum-config-manager --enable remi-php73"
+  - name: Install php
+    package:
+     name: php
+     state: present
+  - name: Install php-mysql
+    package:
+     name: php-mysql
+     state: present
+  - name: start httpd
+    service:
+     name: httpd
+     state: started
+     enabled: yes
+  - name: start mariadb
+    systemd:
+     name: mariadb
+     state: started
+     enabled: yes
+  - name: unarchive wordpress
+    unarchive:
+     src: https://wordpress.org/latest.tar.gz
+     dest: /var/www/html
+     remote_src: yes
+  - name:
+    shell: "mv /var/www/html/wordpress/* /var/www/html"
+  - name: apache owner
+    file:
+     path: /var/www/html
+     mode: "0555"
+     owner: apache
+     group: apache
+  - name: disable selinux
+    shell: "setenforce 0"
+  - name: Restart httpd
+    service:
+      name: httpd
+      state: restarted  
+      enabled: yes
