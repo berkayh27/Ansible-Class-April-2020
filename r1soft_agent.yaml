@@ -29,4 +29,4 @@
       enabled: no
   - name: Get key
     when: (ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] == "6")
-    command: "r1soft-setup  --get-key   http://18.132.18.152:8080/"
+    command: "r1soft-setup  --get-key   http://35.177.185.159:8080/"
